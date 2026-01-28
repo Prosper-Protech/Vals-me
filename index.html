@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Romantic Valentine Gesture Magic</title>
+
+    <meta property="og:title" content="A Special Valentine's Surprise for You 💖">
+    <meta property="og:description" content="Open this link and use your hand gestures to see the magic!">
+    <meta property="og:image" content="preview.jpg"> <meta property="og:type" content="website">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Romantic Valentine Gesture Magic">
+    <meta name="twitter:description" content="Interactive 3D Heart Experience">
+    <meta name="twitter:image" content="preview.jpg">
+
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
     <style>
         body { 
@@ -52,20 +62,17 @@
             left: 50%; 
             transform: translate(-50%, -50%) scale(0); 
             color: #ffb3c1; 
-            font-family: 'Great Vibes', cursive; /* Applied romantic font */
-            font-size: 6rem; /* Increased size for impact */
-            font-weight: 400; /* Great Vibes is not bold */
-            text-shadow: 0 0 30px #ff4d6d, 0 0 15px #ff4d6d; /* Enhanced glow */
+            font-family: 'Great Vibes', cursive;
+            font-size: 6rem; 
+            font-weight: 400; 
+            text-shadow: 0 0 30px #ff4d6d, 0 0 15px #ff4d6d; 
             pointer-events: none; 
             transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
             text-align: center; 
-            width: 90%; /* Allow for wider text */
-            line-height: 1; /* Adjust line height for multi-line text */
+            width: 90%; 
+            line-height: 1; 
         }
-        /* Style for audio controls if visible, though hidden by default */
-        audio {
-            display: none; /* Hide default audio player */
-        }
+        audio { display: none; }
     </style>
 </head>
 <body>
@@ -79,7 +86,6 @@
 
     <audio id="valentine-music" loop autoplay>
         <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
     </audio>
 
     <script type="importmap">
@@ -93,9 +99,8 @@
 
     <script type="module">
         import * as THREE from 'three';
-        import { GUI } from 'three/addons/libs/lil-gui.module.min.js'; // Keep GUI for potential debugging
+        import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
-        // --- MediaPipe Hand Detection Setup ---
         const loadScript = (src) => new Promise(res => {
             const s = document.createElement('script'); s.src = src; s.onload = res; document.head.appendChild(s);
         });
@@ -103,17 +108,16 @@
         await loadScript("https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js");
         await loadScript("https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js");
 
-        // --- Core Variables ---
         let scene, camera, renderer, particles, geometry, material;
-        let particleCount = 30000; // Increased particle count for denser rose effect
+        let particleCount = 30000;
         let gestureScale = 1;
         let targetScale = 1;
         const textElement = document.getElementById('valentine-text');
         const audio = document.getElementById('valentine-music');
 
         const params = {
-            color: '#ff2e63', // Deeper red for roses
-            particleSize: 0.12, // Slightly larger for petal effect
+            color: '#ff2e63',
+            particleSize: 0.12,
             rotationSpeed: 0.8
         };
 
@@ -121,26 +125,24 @@
             const t = (i / particleCount) * Math.PI * 2;
             const x = 16 * Math.pow(Math.sin(t), 3);
             const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
-            const z = (Math.random() - 0.5) * 6; // More depth for a cloud of petals
-            return [x * 0.35, y * 0.35, z]; // Slightly larger heart overall
+            const z = (Math.random() - 0.5) * 6;
+            return [x * 0.35, y * 0.35, z];
         };
 
         init();
         setupHandTracking();
         animate();
 
-        // Start music on first interaction (browser autoplay policy)
         document.addEventListener('click', () => {
             if (audio.paused) {
                 audio.play().catch(e => console.error("Autoplay failed:", e));
             }
         }, { once: true });
 
-
         function init() {
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 18; // Adjusted camera position for larger heart
+            camera.position.z = 18;
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
@@ -148,21 +150,10 @@
             document.body.appendChild(renderer.domElement);
 
             createParticles();
-
-            // Optional: GUI for debugging/tweaking, can be removed for final version
-            const gui = new GUI();
-            gui.addColor(params, 'color').onChange(v => material.color.set(v));
-            gui.add(params, 'particleSize', 0.05, 0.3).onChange(v => material.size = v);
-            gui.add(params, 'rotationSpeed', 0, 2);
-            gui.add(camera.position, 'z', 10, 50).name('Camera Z');
-
-
             window.addEventListener('resize', onWindowResize);
         }
 
         function createParticles() {
-            if (particles) scene.remove(particles); // Remove previous particles if re-creating
-
             geometry = new THREE.BufferGeometry();
             const positions = new Float32Array(particleCount * 3);
             const colors = new Float32Array(particleCount * 3);
@@ -174,9 +165,8 @@
                 positions[i * 3 + 1] = y;
                 positions[i * 3 + 2] = z;
 
-                // Varied rose petal shades: deep reds, pinks, hints of purple
-                const mixedColor = baseColor.clone().lerp(new THREE.Color('#ff85a1'), Math.random() * 0.6); // Pinker
-                mixedColor.lerp(new THREE.Color('#9e0031'), Math.random() * 0.3); // Deeper red
+                const mixedColor = baseColor.clone().lerp(new THREE.Color('#ff85a1'), Math.random() * 0.6);
+                mixedColor.lerp(new THREE.Color('#9e0031'), Math.random() * 0.3);
                 colors[i * 3] = mixedColor.r;
                 colors[i * 3 + 1] = mixedColor.g;
                 colors[i * 3 + 2] = mixedColor.b;
@@ -185,26 +175,16 @@
             geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
             geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
             
-            // Create a soft, diffuse texture for particles (like a petal)
             const particleTexture = new THREE.CanvasTexture(
                 (() => {
                     const canvas = document.createElement('canvas');
-                    canvas.width = 64;
-                    canvas.height = 64;
+                    canvas.width = 64; canvas.height = 64;
                     const ctx = canvas.getContext('2d');
-                    const gradient = ctx.createRadialGradient(
-                        canvas.width / 2,
-                        canvas.height / 2,
-                        0,
-                        canvas.width / 2,
-                        canvas.height / 2,
-                        canvas.width / 2
-                    );
+                    const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
                     gradient.addColorStop(0, 'rgba(255,255,255,1)');
-                    gradient.addColorStop(0.5, 'rgba(255,255,255,0.8)');
                     gradient.addColorStop(1, 'rgba(255,255,255,0)');
                     ctx.fillStyle = gradient;
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillRect(0, 0, 64, 64);
                     return canvas;
                 })()
             );
@@ -213,10 +193,10 @@
                 size: params.particleSize,
                 vertexColors: true,
                 transparent: true,
-                opacity: 0.9, // Slightly more opaque for petal feel
+                opacity: 0.9,
                 blending: THREE.AdditiveBlending,
                 depthWrite: false,
-                map: particleTexture // Apply the custom texture
+                map: particleTexture
             });
 
             particles = new THREE.Points(geometry, material);
@@ -242,25 +222,21 @@
                     const dx = landmarks[4].x - landmarks[8].x;
                     const dy = landmarks[4].y - landmarks[8].y;
                     const distance = Math.sqrt(dx*dx + dy*dy);
-                    
                     targetScale = THREE.MathUtils.mapLinear(distance, 0.03, 0.25, 0.4, 2.2);
 
-                    if (distance < 0.06) { // If pinched closely
+                    if (distance < 0.06) {
                         textElement.style.transform = "translate(-50%, -50%) scale(1)";
-                        // Briefly increase music volume or add a sound effect here if desired
                     } else {
                         textElement.style.transform = "translate(-50%, -50%) scale(0)";
                     }
                 } else {
-                    // If no hand detected, reset text scale
                     textElement.style.transform = "translate(-50%, -50%) scale(0)";
                 }
             });
 
             const cameraUtils = new Camera(videoElement, {
                 onFrame: async () => await hands.send({ image: videoElement }),
-                width: 640,
-                height: 480
+                width: 640, height: 480
             });
             cameraUtils.start();
         }
@@ -273,17 +249,12 @@
 
         function animate() {
             requestAnimationFrame(animate);
-
             gestureScale = THREE.MathUtils.lerp(gestureScale, targetScale, 0.15);
             particles.scale.set(gestureScale, gestureScale, gestureScale);
-            
-            // Add a constant subtle pulse for the heart
-            const pulse = Math.sin(Date.now() * 0.003) * 0.03; // Slower, gentler pulse
+            const pulse = Math.sin(Date.now() * 0.003) * 0.03;
             particles.scale.addScalar(pulse);
-
-            particles.rotation.y += 0.004 * params.rotationSpeed; // Slightly slower rotation
+            particles.rotation.y += 0.004 * params.rotationSpeed;
             particles.rotation.z += 0.001 * params.rotationSpeed;
-
             renderer.render(scene, camera);
         }
     </script>
